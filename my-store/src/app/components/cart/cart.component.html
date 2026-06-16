@@ -1,0 +1,45 @@
+<div class="cart-container">
+  <div class="cart-list" *ngIf="cartItems.length > 0; else emptyCart">
+    <div *ngFor="let item of cartItems" class="cart-item">
+      <img [src]="item.url" width="100">
+      <div class="item-details">
+        <h4>{{ item.name }}</h4>
+        <p>{{ item.price | currency }}</p>
+        <label>Quantity: </label>
+        <input type="number" [(ngModel)]="item.quantity" (ngModelChange)="updateQuantity(item, $event)" min="0">
+        <button (click)="removeItem(item.id)">Remove</button>
+      </div>
+    </div>
+    <h3>Total: {{ totalPrice | currency }}</h3>
+  </div>
+
+  <ng-template #emptyCart>
+    <div class="empty-msg">
+      <p>Your cart is empty.</p>
+      <a routerLink="/">Go back to product list</a>
+    </div>
+  </ng-template>
+
+  <!-- Checkout Form -->
+  <form #checkoutForm="ngForm" (ngSubmit)="onSubmit()" class="checkout-form" *ngIf="cartItems.length > 0">
+    <div class="input-group">
+      <label>Full Name</label>
+      <input type="text" name="fullName" [(ngModel)]="fullName" required minlength="3" #nameModel="ngModel">
+      <div *ngIf="nameModel.invalid && nameModel.touched" class="error">Name is required (min 3 chars)</div>
+    </div>
+
+    <div class="input-group">
+      <label>Address</label>
+      <input type="text" name="address" [(ngModel)]="address" required minlength="6" #addressModel="ngModel">
+      <div *ngIf="addressModel.invalid && addressModel.touched" class="error">Address is required (min 6 chars)</div>
+    </div>
+
+    <div class="input-group">
+      <label>Credit Card Number</label>
+      <input type="text" name="creditCard" [(ngModel)]="creditCard" required minlength="16" maxlength="16" pattern="^[0-9]*$" #cardModel="ngModel">
+      <div *ngIf="cardModel.invalid && cardModel.touched" class="error">Please enter a valid 16-digit card number</div>
+    </div>
+
+    <button type="submit" [disabled]="checkoutForm.invalid">Complete Purchase</button>
+  </form>
+</div>
