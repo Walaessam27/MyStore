@@ -1,6 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'; // أضفنا Output و EventEmitter
 import { Product } from '../../models/Product';
-import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-product-item',
@@ -9,16 +8,20 @@ import { CartService } from '../../services/cart.service';
 })
 export class ProductItemComponent implements OnInit {
   @Input() product: Product = new Product();
+  
+  // الخطوة المطلوبة: تعريف الـ Output
+  @Output() addToCart: EventEmitter<Product> = new EventEmitter();
+
   selectedQuantity: number = 1;
   quantities: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-  constructor(private cartService: CartService) { }
+  constructor() { } // أزلنا الـ CartService من هنا
 
   ngOnInit(): void { }
 
-  addToCart(product: Product): void {
-    const productToAdd = { ...product, quantity: Number(this.selectedQuantity) };
-    this.cartService.addToCart(productToAdd);
-    alert(`${product.name} added to cart!`);
+  // تعديل الوظيفة لتقوم بعمل emit (إرسال) فقط
+  addItemToCart(product: Product): void {
+    const productWithQuantity = { ...product, quantity: Number(this.selectedQuantity) };
+    this.addToCart.emit(productWithQuantity); // نرسل المنتج للأب
   }
 }
